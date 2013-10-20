@@ -1,3 +1,58 @@
 <?php
+function panels_search_ctools_plugin_directory($owner, $plugin_type) {
+  // We'll be nice and limit scandir() calls.
+  if ($owner == 'ctools' && ($plugin_type == 'content_types')) {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+function panels_search_get_view() {
+  static $view;
+  if ($view) { 
+    return $view; 
+  }
+  $view = views_get_view('products_list');
+  $view->set_display("default");
+  $view->dom_id = 'panels_search_form';
+  $view->init_handlers();
+  $path = panels_search_path();
+  $view->override_url = $path;
+  return $view;
+}
+
+/**
+ * Simplified version of views_plugin_exposed_form->render_exposed_form.
+ * This will always render the exposed form.
+ */
+function panels_search_render_exposed_form(&$view) {
+  // Deal with any exposed filters we may have, before building.
+  $exposed_form = $view->display_handler->get_plugin('exposed_form');
+  $form_state = array(
+    'view' => &$exposed_form->view,
+    'display' => &$exposed_form->display,
+    'method' => 'get',
+    'rerender' => TRUE,
+    'no_redirect' => TRUE,
+    'always_process' => TRUE,
+  );
+
+  $form_state['exposed_form_plugin'] = $exposed_form;
+  $form = drupal_build_form('views_exposed_form', $form_state);
+  $output = drupal_render($form);
+
+  return $output;
+}
+
+function panels_search_path() {
+  $path = $_GET['q'];
+  $menu = menu_get_item();
+  return $menu['path'];
+}
+
+function panels_search_search_api_query_alter($query) {
+}
+
+function panels_search_ctools_content_subtype_alter($subtype, $plugin) {
+}
 
 ?>
