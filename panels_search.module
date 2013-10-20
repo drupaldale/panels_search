@@ -49,10 +49,24 @@ function panels_search_path() {
   return $menu['path'];
 }
 
-function panels_search_search_api_query_alter($query) {
+function panels_search_facet_indexes() {
+  $facet_indexes = &drupal_static(__FUNCTION__, NULL);
+  if(isset($facet_indexes)) {
+    return $facet_indexes;
+  }
+
+  $indexes = search_api_index_load_multiple(FALSE);
+  $facet_indexes = array();
+  foreach ($indexes as $key => $index) {
+    if (!$index->enabled || !$index->server()->supportsFeature('search_api_facets')) {
+      continue;
+    }
+    $facet_indexes[$key] = $index;
+  }
+  return $facet_indexes;
 }
 
-function panels_search_ctools_content_subtype_alter($subtype, $plugin) {
+function panels_search_search_api_query_alter($query) {
 }
 
 ?>
