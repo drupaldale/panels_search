@@ -22,6 +22,7 @@ class PanelsSearchFacetapiAdapter extends SearchApiFacetapiAdapter {
     $facets = facetapi_get_enabled_facets($this->info['name']);
     $this->fields = array();
 
+
     // We statically store the current search per facet so that we can correctly
     // assign it when building the facets. See the build() method in the query
     // type plugin classes.
@@ -60,14 +61,6 @@ class PanelsSearchFacetapiAdapter extends SearchApiFacetapiAdapter {
       );
     }
   }
-
-  /**
-   * Add the given facet to the query.
-   */
-  public function addFacet(array $facet, SearchApiQueryInterface $query) {
-    if (isset($this->fields[$facet['name']])) {
-      $options = &$query->getOptions();
-      $options['search_api_facets'][$facet['name']] = $this->fields[$facet['name']];
-    }
-  }
 }
+
+?>

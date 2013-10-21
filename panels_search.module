@@ -3,18 +3,6 @@
 function panels_search_init() {
 }
 
-/**
- * Implements hook_facetapi_adapters().
- */
-function panels_search_facetapi_adapters() {
-  return array(
-    'panels_search' => array(
-      'handler' => array(
-        'class' => 'PanelsSearchFacetapiAdapter',
-      ),
-    ),
-  );
-}
 
 function panels_search_ctools_plugin_directory($owner, $plugin_type) {
   // We'll be nice and limit scandir() calls.
@@ -94,12 +82,15 @@ function panels_search_search_api_query_alter($query) {
   $facets = facetapi_get_enabled_facets($searcher);
 }
 
-/**
- * Take over the search_api_facetapi adapter with our own.
- */
-function panels_search_facetapi_searcher_info_alter(&$searcher_info) {
-  $key = 'search_api@product_display';
-  $searcher_info[$key]['adapter'] = 'panels_search';
+function panels_search_ctools_plugin_post_alter(&$plugin, &$info) {
+  // only modify facetapi adapters
+  if ($info['module'] != 'facetapi' || $info['type'] != 'adapters') {
+    return;
+  }
+  // change the Adapter class to our own
+  if($plugin['module'] == 'search_api_facetapi') {
+    $plugin['handler']['class'] = 'PanelsSearchFacetapiAdapter';
+  }
 }
 
 ?>
