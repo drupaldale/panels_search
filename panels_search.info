@@ -2,3 +2,5 @@ name = Panels Search
 description = Expose Search API Blocks for Panels
 core = 7.x
 package = search
+
+files[] = plugins/facetapi/adapter.inc

@@ -1,7 +1,24 @@
 <?php
+
+function panels_search_init() {
+}
+
+/**
+ * Implements hook_facetapi_adapters().
+ */
+function panels_search_facetapi_adapters() {
+  return array(
+    'panels_search' => array(
+      'handler' => array(
+        'class' => 'PanelsSearchFacetapiAdapter',
+      ),
+    ),
+  );
+}
+
 function panels_search_ctools_plugin_directory($owner, $plugin_type) {
   // We'll be nice and limit scandir() calls.
-  if ($owner == 'ctools' && ($plugin_type == 'content_types')) {
+  if ($owner == 'ctools' && ($plugin_type == 'content_types' || $plugin_type == 'facetapi')) {
     return 'plugins/' . $plugin_type;
   }
 }
@@ -49,6 +66,12 @@ function panels_search_path() {
   return $menu['path'];
 }
 
+/**
+ * Returns a hash of the SearchAPI Indexes that
+ * support FacetAPI. 
+ *
+ * Note: Staticly cached.
+ */
 function panels_search_facet_indexes() {
   $facet_indexes = &drupal_static(__FUNCTION__, NULL);
   if(isset($facet_indexes)) {
@@ -67,6 +90,16 @@ function panels_search_facet_indexes() {
 }
 
 function panels_search_search_api_query_alter($query) {
+  $searcher = 'search_api@' . $query->getIndex()->machine_name;
+  $facets = facetapi_get_enabled_facets($searcher);
+}
+
+/**
+ * Take over the search_api_facetapi adapter with our own.
+ */
+function panels_search_facetapi_searcher_info_alter(&$searcher_info) {
+  $key = 'search_api@product_display';
+  $searcher_info[$key]['adapter'] = 'panels_search';
 }
 
 ?>
