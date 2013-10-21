@@ -12,7 +12,8 @@ $plugin = array(
 /**
  * Returns the facet for the specified field
  */
-function panels_search_panels_search_facets_content_type($subtype_id) {
+function panels_search_panels_search_facets_content_type($subtype_id, $plugin) {
+  panels_search_register_facet($subtype_id);
   $info = array();
   $info['render last'] = TRUE;
   return $info;
@@ -53,8 +54,20 @@ function panels_search_facet_info($key, $field) {
  */
 function panels_search_panels_search_facets_content_type_render($subtype, $conf, $panel_args, $context) {
   // Build the content type block.
+  // Asume we only have one active searcher.
+  $searcher = current(facetapi_get_active_searchers());
+  $adapter = facetapi_adapter_load($searcher);
+
+  
+  // split this out?
+  $adapter->processFacets(); // make a singular version of this?
+  $facet = $adapter->getFacet(array('name'=>$subtype));
+  $processor = $adapter->getProcessor($subtype);
+  $realm = facetapi_realm_load('block');
+  // $processor->getBuild() has the base render array.  
+  $content = $facet->build($realm, $processor);
+
   $block = new stdClass();
-  $content = $subtype;
   $block->content = $content;
   return $block;
 }

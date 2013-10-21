@@ -19,7 +19,7 @@ class PanelsSearchFacetapiAdapter extends SearchApiFacetapiAdapter {
   public function initActiveFilters($query) {
     $search_id = $query->getOption('search id');
     $index_id = $this->info['instance'];
-    $facets = facetapi_get_enabled_facets($this->info['name']);
+    $facets = $this->getEnabledFacets();
     $this->fields = array();
 
 
@@ -60,6 +60,14 @@ class PanelsSearchFacetapiAdapter extends SearchApiFacetapiAdapter {
         'missing'           => $options['facet_missing'],
       );
     }
+  }
+
+  public function getEnabledFacets($realm_name = NULL) {
+    $searcher = $this->info['name'];
+    $facets = facetapi_get_enabled_facets($searcher);
+    $panel_facets = panels_search_facet_registry($searcher);
+    $facets = array_merge($facets, $panel_facets);
+    return $facets;
   }
 }
 

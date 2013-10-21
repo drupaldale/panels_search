@@ -77,6 +77,37 @@ function panels_search_facet_indexes() {
   return $facet_indexes;
 }
 
+/**
+ * Register the search facet
+ */
+function panels_search_register_facet($field, $settings = array()) {
+  $facet_registry = &drupal_static('panels_search_facet_registry', array());
+  $facet_registry[$field] = $settings;
+}
+
+/**
+ *
+ */
+function panels_search_facet_registry($searcher) {
+  $facet_registry = &drupal_static('panels_search_facet_registry', array());
+
+  $facets = array();
+  // Gets cached settings, finds enabled facets.
+  $cached = facetapi_get_searcher_settings($searcher);
+  foreach ($cached as $name => $settings) {
+    $facet = $settings->facet;
+    if(isset($facet_registry[$facet])) {
+      $facets[$facet] = $facet;
+    }
+  }
+  $facet_info = facetapi_get_facet_info($searcher);
+  $enabled_facets = array_intersect_key($facet_info, $facets);
+  return $enabled_facets;
+}
+
+function panels_search_panels_pre_render(&$display, &$renderer) {
+}
+
 function panels_search_search_api_query_alter($query) {
   $searcher = 'search_api@' . $query->getIndex()->machine_name;
   $facets = facetapi_get_enabled_facets($searcher);
