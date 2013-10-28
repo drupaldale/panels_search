@@ -65,9 +65,22 @@ class PanelsSearchFacetapiAdapter extends SearchApiFacetapiAdapter {
   public function getEnabledFacets($realm_name = NULL) {
     $searcher = $this->info['name'];
     $facets = facetapi_get_enabled_facets($searcher);
-    $panel_facets = panels_search_facet_registry($searcher);
+    $panel_facets = panels_search_facet_registry($searcher, $this);
     $facets = array_merge($facets, $panel_facets);
     return $facets;
+  }
+
+  /**
+   * Wrap parent method's output so we can programatically modify settings.
+   * Specifically created to add default filters.
+   */
+  public function getFacetSettings(array $facet, array $realm) {
+    $settings = parent::getFacetSettings($facet, $realm);
+    // @todo See if we should just create our own filter instead of 
+    // relying on facetapi_bonus
+    // enable rewrite on all facets
+    $settings->settings['filters']['rewrite_items'] = array('status'=>1, 'weight'=>45);
+    return $settings;
   }
 }
 

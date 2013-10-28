@@ -65,9 +65,15 @@ function panels_search_panels_search_facets_content_type_render($subtype, $conf,
   $processor = $adapter->getProcessor($subtype);
   $realm = facetapi_realm_load('block');
   // $processor->getBuild() has the base render array.  
-  $content = $facet->build($realm, $processor);
+  if(!$processor) {
+  } 
+
+  if($processor) {
+    $content = $facet->build($realm, $processor);
+  }
 
   $block = new stdClass();
+  $block->title = $subtype;
   $block->content = $content;
   return $block;
 }

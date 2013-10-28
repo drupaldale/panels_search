@@ -86,9 +86,11 @@ function panels_search_register_facet($field, $settings = array()) {
 }
 
 /**
+ * Returns the facets registered programatically via panels_search_register_facet
  *
+ * Currently this only happens via the ctools facet blocks
  */
-function panels_search_facet_registry($searcher) {
+function panels_search_facet_registry($searcher, &$adapter) {
   $facet_registry = &drupal_static('panels_search_facet_registry', array());
 
   $facets = array();
@@ -102,6 +104,7 @@ function panels_search_facet_registry($searcher) {
   }
   $facet_info = facetapi_get_facet_info($searcher);
   $enabled_facets = array_intersect_key($facet_info, $facets);
+  //dpm($adapter->getFacet($enabled_facets['field_product_market'])->getSettings('block')->settings);
   return $enabled_facets;
 }
 
@@ -109,8 +112,6 @@ function panels_search_panels_pre_render(&$display, &$renderer) {
 }
 
 function panels_search_search_api_query_alter($query) {
-  $searcher = 'search_api@' . $query->getIndex()->machine_name;
-  $facets = facetapi_get_enabled_facets($searcher);
 }
 
 function panels_search_ctools_plugin_post_alter(&$plugin, &$info) {
@@ -118,10 +119,41 @@ function panels_search_ctools_plugin_post_alter(&$plugin, &$info) {
   if ($info['module'] != 'facetapi' || $info['type'] != 'adapters') {
     return;
   }
+
   // change the Adapter class to our own
   if($plugin['module'] == 'search_api_facetapi') {
     $plugin['handler']['class'] = 'PanelsSearchFacetapiAdapter';
   }
+}
+
+/**
+ * All facets have the rewrite filter enabled. 
+ * @see PanelsSearchFacetapiAdapter::getFacetSettings
+ */
+function panels_search_facet_items_alter(&$build, &$settings) {
+}
+
+/**
+ * Implements hook_facetapi_facet_info_alter().
+ */
+function panels_search_facetapi_facet_info_alter(&$facet_info, $searcher_info) {
+  foreach ($facet_info as &$facet) {
+    $facet['dependency plugins'][] = 'panels_search';
+  }
+}
+
+/**
+ * Implements hook_facetapi_dependencies().
+ */
+function panels_search_facetapi_dependencies() {
+  return array(
+    'panels_search' => array(
+      'handler' => array(
+        'label' => t('Panels Search Dependecy'),
+        'class' => 'FacetapiDependencyPanelsSearch',
+      ),
+    ),
+  );
 }
 
 ?>
