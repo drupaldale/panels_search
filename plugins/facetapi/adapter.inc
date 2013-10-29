@@ -62,6 +62,12 @@ class PanelsSearchFacetapiAdapter extends SearchApiFacetapiAdapter {
     }
   }
 
+  /**
+   * Return the base facetapi facets (enabled via searchapi facets tab)
+   * and the facets enabled via the panels_search_facets plugins.
+   *
+   * Overrides SearchApiFacetapiAdapter::getEnabledFacets
+   */
   public function getEnabledFacets($realm_name = NULL) {
     $searcher = $this->info['name'];
     $facets = facetapi_get_enabled_facets($searcher);
