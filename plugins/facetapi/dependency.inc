@@ -13,7 +13,8 @@ class FacetapiDependencyPanelsSearch extends FacetapiDependency {
    * Executes the dependency check.
    */
   public function execute() {
-    // Otherwise hide this facet.
+    $activeItems = &$this->activeItems;
+    $facet = &$this->facet;
     return NULL;
   }
 
