@@ -44,7 +44,7 @@ function panels_search_facet_info($key, $field) {
 
   $info = array(
     'title' => 'Facet: '.$title,
-    'category' => 'Panels Search',
+    'category' => 'Panels Search Facets',
   );
   return $info;
 }
