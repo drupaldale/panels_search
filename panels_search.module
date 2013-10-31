@@ -6,7 +6,8 @@ function panels_search_init() {
 
 function panels_search_ctools_plugin_directory($owner, $plugin_type) {
   // We'll be nice and limit scandir() calls.
-  if ($owner == 'ctools' && ($plugin_type == 'content_types' || $plugin_type == 'facetapi')) {
+  if ($owner == 'ctools' && ($plugin_type == 'contexts' || 
+    $plugin_type == 'content_types' || $plugin_type == 'facetapi')) {
     return 'plugins/' . $plugin_type;
   }
 }
