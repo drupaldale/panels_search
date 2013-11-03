@@ -13,9 +13,28 @@ $plugin = array(
 );
 
 /**
+ * So right now we have the issue that contexts are all evaluated before the
+ * panel panes are rendered. This means that a context that depends on a pane
+ * being rendered will never show up.
+ *
+ * The fix for this is to alter how ctools/panels processes the contexts.
+ *
+ * So for this, by the time that a 'render last' pane is rendered, this context
+ * should still be available. It would need to be re-processed then.
+ *
+ * So first, we need to keep the context around. We can achieve this by
+ * 1) Also returning a context object
+ * 2) Changing ctools to always keep context objects around and instead reprocess
+ * each context before pane render. 
+ *
+ * Then we need a way for the context to re-process itself. That would be changing ctools
+ * to call some method on the context. Any old-style context would just return the stored value.
  */
+class context_searcher extends ctools_context {
+}
+
 function panels_search_context_create_searcher($empty, $data = NULL, $conf = FALSE) {
-  $context = new ctools_context('string');
+  $context = new context_searcher('string');
   $context->plugin = 'string';
 
   // Make sure to return a context obj for admin requests. 

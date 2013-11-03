@@ -5,7 +5,6 @@ $plugin = array(
   'title' => t('Panels Search Current Search'),
   'description' => t('Block showing current search with Facet support'),
   'category' => t('Panels Search'),
-  'required context' => new ctools_context_required(t('Searcher'), 'string'),
   'render last' => TRUE,
 );
 
