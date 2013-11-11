@@ -12,18 +12,46 @@ function panels_search_ctools_plugin_directory($owner, $plugin_type) {
   }
 }
 
-function panels_search_get_view() {
-  static $view;
-  if ($view) { 
-    return $view; 
+function panels_search_get_view($view_name=NULL) {
+  $views = &drupal_static(__FUNCTION__, array());
+  if (empty($view_name)) {
+    $view = current($views);
+    return $view;
   }
-  $view = views_get_view('products_list');
+  if (isset($views[$view_name])) {
+    $view = $views[$view_name];
+    return $view;
+  }
+  $view = views_get_view($view_name);
+  if (empty($view)) {
+    return $view;
+  }
   $view->set_display("default");
   $view->dom_id = 'panels_search_form';
   $view->init_handlers();
   $path = panels_search_path();
   $view->override_url = $path;
+
+  $views[$view_name] = $view;
   return $view;
+}
+
+function panels_search_search_views() {
+  $names = array();
+  $indexes = search_api_index_load_multiple(FALSE);
+  foreach (views_get_all_views() as $name => $view) {
+    if ($view->disabled) {
+      continue;
+    }
+    foreach ($indexes as $key => $index) {
+      $table = 'search_api_index_' . $index->machine_name;
+      if ($view->base_table == $table) {
+        $names[] = $name;
+        break;
+      }
+    }
+  }
+  return $names;
 }
 
 /**

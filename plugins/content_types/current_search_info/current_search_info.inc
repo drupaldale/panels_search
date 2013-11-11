@@ -13,6 +13,9 @@ $plugin = array(
  */
 function panels_search_current_search_info_content_type_render($subtype, $conf, $panel_args, $context) {
   $searcher = current(facetapi_get_active_searchers());
+  if (empty($searcher)) {
+    return;
+  }
   $adapter = facetapi_adapter_load($searcher);
   $activeItems = $adapter->getAllActiveItems();
   $facets = array();

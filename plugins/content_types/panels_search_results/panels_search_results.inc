@@ -7,6 +7,7 @@ $plugin = array(
   'category' => t('Panels Search'),
   'required context' => new ctools_context_optional(t('Keywords'), 'string'),
   'defaults' => array(
+    'view_id' => NULL,
   ),
 );
 
@@ -23,16 +24,18 @@ function panels_search_panels_search_results_content_type_render($subtype, $conf
 
   // Build the content type block.
   $block = new stdClass();
-  $view = panels_search_get_view();
+  $view_id = $conf['view_id'];
+  $view = panels_search_get_view($view_id);
 
-  $display_id = 'default';
-  $field = 'search_api_views_fulltext';
-  $view->build();
-  $view->exposed_widgets = '';
-
-
-  $form_html = $view->preview('default');
-  $block->content = $form_html;
+  $output = '';
+  if ($view) {
+    $display_id = 'default';
+    $field = 'search_api_views_fulltext';
+    $view->build();
+    $view->exposed_widgets = '';
+    $output = $view->preview('default');
+  }
+  $block->content = $output;
   return $block;
 }
 
@@ -41,6 +44,19 @@ function panels_search_panels_search_results_content_type_render($subtype, $conf
  */
 function panels_search_panels_search_results_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
+
+  $views = panels_search_search_views();
+  $options = array();
+  foreach($views as $key => $view_id) {
+    $options[$view_id] = $view_id;
+  }
+
+  $form['view_id'] = array(
+    '#type' => 'select',
+    '#title' => t('View ID'),
+    '#options' => $options,
+    '#default_value' => $conf['view_id'],
+  );
   return $form;
 }
 

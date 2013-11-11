@@ -56,9 +56,11 @@ function panels_search_panels_search_facets_content_type_render($subtype, $conf,
   // Build the content type block.
   // Asume we only have one active searcher.
   $searcher = current(facetapi_get_active_searchers());
+  if (empty($searcher)) {
+    return;
+  }
   $adapter = facetapi_adapter_load($searcher);
 
-  
   // split this out?
   $adapter->processFacets(); // make a singular version of this?
   $facet = $adapter->getFacet(array('name'=>$subtype));
