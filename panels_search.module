@@ -185,4 +185,19 @@ function panels_search_facetapi_dependencies() {
   );
 }
 
+function panels_search_facetapi_widgets() {
+  return array(
+    'uber_links' => array(
+      'handler' => array(
+        'label' => t('Uber Links'),
+        'class' => 'FacetapiWidgetUberLinks',
+        'query types' => array('term', 'date'),
+        'requirements' => array(
+          'facetapi_requirement_realm_property' => array('element type' => 'links')
+        ),
+      ),
+    ),
+  );
+}
+
 ?>
