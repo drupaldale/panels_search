@@ -79,9 +79,14 @@ function panels_search_panels_search_facets_content_type_render($subtype, $conf,
   if (!$facet->getBuild()) {
     return;
   }
+  $title = $subtype;
+  $settings = $content[$subtype]['#settings'];
+  if(isset($settings->title_override)) {
+    $title = $settings->title_override;
+  }
 
   $block = new stdClass();
-  $block->title = $subtype;
+  $block->title = $title;
   $block->content = $content;
   return $block;
 }
